@@ -91,3 +91,27 @@ void shutdown_ncurses() {
     endwin();
 }
 
+// Bintang
+
+void spawn_bintang(int count) {
+    stars.clear();
+    for (int i = 0; i < count; i++)
+        stars.push_back({ rand() % maxX, rand() % maxY });
+}
+
+void draw_bintang() {
+    for (auto& s : stars)
+        mvaddch(s.y, s.x, '.');
+}
+
+void respawn_stars() {
+    for (auto& s : stars) {
+        s.y++;
+        if (s.y >= maxY) {
+            s.y = 0;
+            s.x = rand() % maxX;
+        }
+    }
+}
+
+
