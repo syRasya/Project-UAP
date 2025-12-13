@@ -114,4 +114,25 @@ void respawn_stars() {
     }
 }
 
+// Asteroid
+
+void spawn_asteroid() {
+    if (maxX < 3) return;
+    int x = rand() % (maxX - 2) + 1;
+    int speed = 1 + rand() % 3;
+    asteroids.emplace_back(x, 0, speed);
+}
+
+void update_asteroids() {
+    for (auto& a : asteroids) {
+        a.frameCount++;
+        if (a.frameCount >= a.speed) {
+            a.y++;
+            a.frameCount = 0;
+        }
+    }
+    asteroids.erase(remove_if(asteroids.begin(), asteroids.end(),
+        [](auto& a) { return a.y >= maxY; }), asteroids.end());
+}
+
 
