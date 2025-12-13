@@ -135,4 +135,16 @@ void update_asteroids() {
         [](auto& a) { return a.y >= maxY; }), asteroids.end());
 }
 
+// Peluru
+
+void update_peluru() {
+    for (auto& b : peluru) {
+        if (!b.active) continue;
+        b.y--;
+        if (b.y < 0) b.active = false;
+    }
+    peluru.erase(remove_if(peluru.begin(), peluru.end(),
+        [](auto& b) { return !b.active; }), peluru.end());
+}
+
 
