@@ -207,3 +207,99 @@ void attack(Pemain& p) {
     }
 }
 
+//menu
+
+bool tampilan_menu(){
+    erase();
+mvprintw(maxY / 2 - 2, maxX / 2 - 10, "SPACE SHOOTER");
+mvprintw(maxY / 2 + 0, maxX / 2 - 12, "1) Start Game");
+    mvprintw(maxY / 2 + 1, maxX / 2 - 12, "2) Quit");
+    refresh();
+
+ while (true) {
+        int ch = getch();
+        if (ch == '1') return true;
+        if (ch == '2') return false;
+    }
+}
+
+// Looping game
+
+void game_loop() {
+    timeout(0);
+    nodelay(stdscr, TRUE);
+    flushinp();
+
+    peluru.clear();
+    asteroids.clear();
+    score = 0;
+    highScore = load_highscore();
+
+    Pemain player(maxX / 2, maxY - 3);
+    int frames = 0;
+
+    while (running) {
+        SLEEP_MS(40);
+
+        int ch;
+        while ((ch = getch()) != ERR) {
+            if (ch == 'q') {
+                running = false;
+                break;
+            }
+            if (ch == KEY_LEFT && player.x > 1) player.x--;
+            if (ch == KEY_RIGHT && player.x < maxX - 2) player.x++;
+            if (ch == ' ') peluru.emplace_back(player.x, player.y - 1);
+        }
+
+        if (!running) break;
+
+        frames++;
+        if (frames % 2 == 0) respawn_stars();
+        if (frames % 20 == 0) spawn_asteroid();
+
+        update_asteroids();
+        update_peluru();
+        attack(player);
+
+        erase();
+        draw_bintang();
+        draw_asteroids();
+        draw_peluru();
+        draw_player(player);
+        draw_ui(player);
+        refresh();
+
+        if (player.lives <= 0) break;
+    }
+
+    save_highscore(score);
+
+    erase();
+    mvprintw(maxY / 2, maxX / 2 - 10, "GAME OVER");
+    mvprintw(maxY / 2 + 1, maxX / 2 - 12, "Score: %d", score);
+    mvprintw(maxY / 2 + 2, maxX / 2 - 12, "High: %d", highScore);
+    mvprintw(maxY / 2 + 4, maxX / 2 - 14, "Press any key...");
+    nodelay(stdscr, FALSE);
+    getch();
+}
+
+// Main
+
+int main() {
+    srand((unsigned)time(nullptr));
+    init_ncurses();
+
+    while (true) {
+        bool start = tampilan_menu();
+        if (!start) break;
+
+        play_music();
+        running = true;
+        game_loop();
+        stop_music();
+    }
+
+    shutdown_ncurses();
+    return 0;
+}
