@@ -45,3 +45,49 @@ int score = 0;
 int highScore = 0;
 bool running = true;
 
+// Music
+
+void play_music() {
+    PlaySound(TEXT("music.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+}
+
+void stop_music() {
+    PlaySound(NULL, 0, 0);
+}
+
+// Score
+
+int load_highscore() {
+    ifstream ifs("scores.txt");
+    int hs = 0;
+    if (ifs >> hs) return hs;
+    return 0;
+}
+
+void save_highscore(int sc) {
+    if (sc > highScore) {
+        highScore = sc;
+        ofstream ofs("scores.txt", ios::trunc);
+        ofs << highScore;
+    }
+}
+
+// Ncurses
+
+void spawn_bintang(int count);
+
+void init_ncurses() {
+    initscr();
+    cbreak();
+    noecho();
+    curs_set(0);
+    keypad(stdscr, TRUE);
+    timeout(0);
+    getmaxyx(stdscr, maxY, maxX);
+    spawn_bintang(max(10, (maxX * maxY) / 80));
+}
+
+void shutdown_ncurses() {
+    endwin();
+}
+
