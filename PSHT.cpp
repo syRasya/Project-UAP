@@ -179,3 +179,31 @@ void draw_ui(Pemain& p) {
     mvprintw(0, maxX - 12, "Lives: %d", p.lives);
 }
 
+// Logika Nyerang dan Imun
+
+void attack(Pemain& p) {
+    for (auto& b : peluru) {
+        if (!b.active) continue;
+        for (auto it = asteroids.begin(); it != asteroids.end();) {
+            if (b.x == it->x && b.y == it->y) {
+                b.active = false;
+                score += 10;
+                it = asteroids.erase(it);
+            }
+            else ++it;
+        }
+    }
+
+    if (!p.immune) {
+        for (auto it = asteroids.begin(); it != asteroids.end();) {
+            if (it->x == p.x && it->y == p.y) {
+                p.lives--;
+                p.immune = true;
+                p.immune_until = Clock::now() + chrono::seconds(2);
+                it = asteroids.erase(it);
+            }
+            else ++it;
+        }
+    }
+}
+
