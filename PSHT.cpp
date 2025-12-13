@@ -147,4 +147,35 @@ void update_peluru() {
         [](auto& b) { return !b.active; }), peluru.end());
 }
 
+// Gambar Pemain, Peluru, Asteroid, UI
+
+void draw_player(Pemain& p) {
+    if (p.immune && Clock::now() >= p.immune_until)
+        p.immune = false;
+
+    bool blink = (Clock::now().time_since_epoch().count() / 100000000) % 2 == 0;
+
+    if (!p.immune || blink) {
+        mvaddch(p.y, p.x, '^');
+        mvaddch(p.y, p.x - 1, '/');
+        mvaddch(p.y, p.x + 1, '\\');
+    }
+}
+
+void draw_peluru() {
+    for (auto& b : peluru)
+        if (b.active)
+            mvaddch(b.y, b.x, '|');
+}
+
+void draw_asteroids() {
+    for (auto& a : asteroids)
+        mvaddch(a.y, a.x, 'O');
+}
+
+void draw_ui(Pemain& p) {
+    mvprintw(0, 2, "Score: %d", score);
+    mvprintw(0, maxX / 2 - 6, "High: %d", highScore);
+    mvprintw(0, maxX - 12, "Lives: %d", p.lives);
+}
 
